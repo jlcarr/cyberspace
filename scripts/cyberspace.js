@@ -215,6 +215,12 @@ function main() {
 	//drawPlane(0, 0, 0, 0, 400);
 	//drawPlane(0, -25, 30, 300, -100, 700);
 	//drawPlane(0, 0, 0, 0, 0, 500);
+	
+	// Define animation parameters
+	var n_planes = 40;
+	// Inits
+	var planeStack = [];
+
 
 	// Setup animation
 	var loopLength = 10;
@@ -224,11 +230,38 @@ function main() {
 		var loopFraction = (time % loopLength)/parseFloat(loopLength);
 		// Perform rendering
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		drawPlane(1000*(loopFraction-0.5), -25, 30, 300, -100, 700 - 500*loopFraction);
-		drawPlane(1000*(loopFraction-0.5), 0, 0, 0, 0, 500 - 500*loopFraction);
+		
+		planeStack = planeStack.filter(i_plane => i_plane.z_translation > 0);
+		while (n_planes > planeStack.length){
+			var newPlane = {
+				birthday: time,
+				azimuthal_angle: 180 * Math.random() - 90,
+				polar_angle: 180 * Math.random() - 90,
+				x_translation: 1000 * Math.random() - 500,
+				y_translation: 1000 * Math.random() - 500,
+				z_translation: 4000 * Math.random() + 1000
+				};
+			planeStack.push(newPlane);
+		}
+		for (var i_plane of planeStack) {
+			i_plane.z_translation -= 0.5*(time-i_plane.birthday);
+			drawPlane(
+				0, //50*(time-i_plane.birthday)-5*i_plane.y_translation,
+				i_plane.azimuthal_angle,
+				i_plane.polar_angle,
+				i_plane.x_translation,
+				i_plane.y_translation,
+				i_plane.z_translation
+				);
+		}
+		
+		//drawPlane(1000*(loopFraction-0.5), -25, 30, 300, -100, 700 - 500*loopFraction);
+		//drawPlane(1000*(loopFraction-0.5), 0, 0, 0, 0, 500 - 500*loopFraction);
 		requestAnimationFrame(drawFrame);
 	}
 	requestAnimationFrame(drawFrame);
+	//drawFrame(0);
+	//drawFrame(1);
 }
 
 
