@@ -183,7 +183,7 @@ function main() {
 
 	// Clear the canvas
 	gl.clearColor(0, 0, 0, 1);
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
 	// Turn on the position attribute
@@ -213,9 +213,22 @@ function main() {
 	}
 
 	//drawPlane(0, 0, 0, 0, 400);
+	//drawPlane(0, -25, 30, 300, -100, 700);
+	//drawPlane(0, 0, 0, 0, 0, 500);
 
-	drawPlane(0, -25, 30, 300, -100, 700);
-	drawPlane(100, 0, 0, 0, 0, 500);
+	// Setup animation
+	var loopLength = 10;
+	function drawFrame(time) {
+		// Setup time delta
+		time *= 0.001;
+		var loopFraction = (time % loopLength)/parseFloat(loopLength);
+		// Perform rendering
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		drawPlane(1000*(loopFraction-0.5), -25, 30, 300, -100, 700 - 500*loopFraction);
+		drawPlane(1000*(loopFraction-0.5), 0, 0, 0, 0, 500 - 500*loopFraction);
+		requestAnimationFrame(drawFrame);
+	}
+	requestAnimationFrame(drawFrame);
 }
 
 
