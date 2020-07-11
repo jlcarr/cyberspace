@@ -10,18 +10,21 @@ window.addEventListener("load", main, false);
 
 
 
-// Puts text in center of canvas.
-function makeTextCanvas(text, width, height) {
+function makeTextCanvas(text) {
+	// Process text
+	var fontSize = 20;
+	text = text.split("\n");
+	var height = fontSize * (text.length+3);
+	var width = fontSize * 0.65 * Math.max(...text.map( line => line.length));
+
 	var textCanvas = document.createElement("canvas").getContext("2d");
-	//var textCanvas = document.getElementById("glcanvas").getContext("2d");
 	textCanvas.canvas.width  = width;
 	textCanvas.canvas.height = height;
 	textCanvas.font = "20px monospace";
 	textCanvas.fillStyle = "blue";
-	textCanvas.clearRect(0, 0, width, height);
-	text = text.split("\n");
+
 	for (var i_line=0; i_line < text.length; i_line++){
-		textCanvas.fillText(text[i_line], 20, (i_line+2)*20);
+		textCanvas.fillText(text[i_line], fontSize, fontSize*(i_line+2));
 	}
 	return textCanvas.canvas;
 }
@@ -41,7 +44,7 @@ let vertexShader = `
 	uniform vec3 translation;
 
 
-	attribute vec2 a_position;
+	attribute vec2 initial_position;
 	attribute vec2 a_texCoord;
 
 	uniform vec3 clipspace_scale;
@@ -50,7 +53,7 @@ let vertexShader = `
 
 	void main() {
 		// First transform the position in viewspace
-		vec3 viewspace_position = vec3(a_position, 0);
+		vec3 viewspace_position = vec3(initial_position, 0);
 		
 		// Azimuthal rotation
 		float rad_azimuthal_angle = radians(azimuthal_angle);
@@ -89,6 +92,7 @@ let fragmentShader = `
 	// the texCoords passed in from the vertex shader.
 	varying vec2 v_texCoord;
 
+
 	void main() {
 		gl_FragColor = texture2D(u_image, v_texCoord);
 	}
@@ -97,7 +101,7 @@ let fragmentShader = `
 
 function main() {
 	// Before the WebGL part let's make the texture
-	var image = makeTextCanvas(vertexShader+fragmentShader, 800, 800)
+	var image = makeTextCanvas(vertexShader+fragmentShader)
 
 	// Initial setup
 	glCanvas = document.getElementById("glcanvas");
@@ -110,18 +114,8 @@ function main() {
 	//gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	//gl.depthMask(false);
 	
-
-	const shaderSet = [
-		{
-			type: gl.VERTEX_SHADER,
-			source: vertexShader
-		},
-		{
-			type: gl.FRAGMENT_SHADER,
-			source: fragmentShader
-		}
-	];
-	program = buildShaderProgram(shaderSet);
+	// Compile the program
+	program =  buildShaderProgram(vertexShader, fragmentShader);
 	gl.useProgram(program);
 	
 	
@@ -136,7 +130,7 @@ function main() {
 	var polar_angleLocation = gl.getUniformLocation(program, "polar_angle");
 	var translationLocation = gl.getUniformLocation(program, "translation");
 	// Attributes indicies
-	var positionLocation = gl.getAttribLocation(program, "a_position");
+	var positionLocation = gl.getAttribLocation(program, "initial_position");
 	var texcoordLocation = gl.getAttribLocation(program, "a_texCoord");
 	// Buffer allocation and indicies
 	var positionBuffer = gl.createBuffer();
@@ -200,6 +194,8 @@ function main() {
 	// set the resolution
 	gl.uniform3f(clipspace_scaleLocation, gl.canvas.width, gl.canvas.height, (gl.canvas.width+gl.canvas.height)/2);
 
+	
+	// Draw function
 	function drawPlane(azimuthal_angle, polar_angle, x_translation, y_translation, z_translation){
 		// set the transform
 		gl.uniform1f(azimuthal_angleLocation, azimuthal_angle);
@@ -207,10 +203,11 @@ function main() {
 		gl.uniform3f(translationLocation, x_translation, y_translation, z_translation);
 
 		// Draw the rectangle.
-		gl.drawArrays(gl.TRIANGLES, 0, 3*2);
+		gl.drawArrays(gl.TRIANGLES, 0, 3*n_tris);
 	}
 
-	drawPlane(0, 0, -100, 0, 500);
+	//drawPlane(0, 0, 0, 0, 400);
+	drawPlane(0, 0, 0, 0, 500);
 	drawPlane(-25, 30, 300, -100, 700);
 }
 
@@ -218,13 +215,15 @@ function main() {
 
 
 // Shader building tools from Mozilla
-function buildShaderProgram(shaderInfo) {
+function buildShaderProgram(vertexSource, fragmentSource) {
 	let program = gl.createProgram();
-
-	shaderInfo.forEach(function(desc) {
-		let shader = compileShader(desc.source, desc.type);
-		if (shader) gl.attachShader(program, shader);
-	});
+	
+	// Compile the vertex shader
+	let vShader = compileShader(vertexSource, gl.VERTEX_SHADER);
+	if (vShader) gl.attachShader(program, vShader);
+	// Compile the fragment shader
+	let fShader = compileShader(fragmentSource, gl.FRAGMENT_SHADER);
+	if (fShader) gl.attachShader(program, fShader);
 
 	gl.linkProgram(program)
 
