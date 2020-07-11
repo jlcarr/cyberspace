@@ -39,6 +39,8 @@ let vertexShader = `
 		0,0,1,0
 	);
 
+	uniform float scroll_factor;
+
 	uniform float azimuthal_angle;
 	uniform float polar_angle;
 	uniform vec3 translation;
@@ -55,6 +57,8 @@ let vertexShader = `
 		// First transform the position in viewspace
 		vec3 viewspace_position = vec3(initial_position, 0);
 		
+		// Scroll factor
+		viewspace_position.y += scroll_factor;
 		// Azimuthal rotation
 		float rad_azimuthal_angle = radians(azimuthal_angle);
 		mat3 azimuthal_rotation = mat3(
@@ -126,6 +130,7 @@ function main() {
 	
 	// Uniform indicies
 	var clipspace_scaleLocation = gl.getUniformLocation(program, "clipspace_scale");
+	var scroll_factorLocation = gl.getUniformLocation(program, "scroll_factor");
 	var azimuthal_angleLocation = gl.getUniformLocation(program, "azimuthal_angle");
 	var polar_angleLocation = gl.getUniformLocation(program, "polar_angle");
 	var translationLocation = gl.getUniformLocation(program, "translation");
@@ -196,8 +201,9 @@ function main() {
 
 	
 	// Draw function
-	function drawPlane(azimuthal_angle, polar_angle, x_translation, y_translation, z_translation){
+	function drawPlane(scroll_factor, azimuthal_angle, polar_angle, x_translation, y_translation, z_translation){
 		// set the transform
+		gl.uniform1f(scroll_factorLocation, scroll_factor);
 		gl.uniform1f(azimuthal_angleLocation, azimuthal_angle);
 		gl.uniform1f(polar_angleLocation, polar_angle);
 		gl.uniform3f(translationLocation, x_translation, y_translation, z_translation);
@@ -207,8 +213,9 @@ function main() {
 	}
 
 	//drawPlane(0, 0, 0, 0, 400);
-	drawPlane(0, 0, 0, 0, 500);
-	drawPlane(-25, 30, 300, -100, 700);
+
+	drawPlane(0, -25, 30, 300, -100, 700);
+	drawPlane(100, 0, 0, 0, 0, 500);
 }
 
 
