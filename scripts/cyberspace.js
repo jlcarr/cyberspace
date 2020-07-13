@@ -21,7 +21,7 @@ function makeTextCanvas(text) {
 	textCanvas.canvas.width  = width;
 	textCanvas.canvas.height = height;
 	textCanvas.font = "20px monospace";
-	textCanvas.fillStyle = "blue";
+	textCanvas.fillStyle = "green";
 
 	for (var i_line=0; i_line < text.length; i_line++){
 		textCanvas.fillText(text[i_line], fontSize, fontSize*(i_line+2));
@@ -212,41 +212,43 @@ function main() {
 		gl.drawArrays(gl.TRIANGLES, 0, 3*n_tris);
 	}
 
-	//drawPlane(0, 0, 0, 0, 400);
-	//drawPlane(0, -25, 30, 300, -100, 700);
-	//drawPlane(0, 0, 0, 0, 0, 500);
 	
 	// Define animation parameters
 	var n_planes = 40;
+	var speed = 100;
 	// Inits
 	var planeStack = [];
+	for (var i_plane = 0; i_plane < n_planes; i_plane++) planeStack.push(
+		{
+			birthday: 0,
+			azimuthal_angle: 90 * Math.floor(3 * Math.random()) - 90,
+			polar_angle: 90 * Math.floor(3 * Math.random()) - 90,
+			x_translation: 1000 * Math.random() - 500,
+			y_translation: 1000 * Math.random() - 500,
+			z_translation: 2000 * Math.random()
+		});
 
 
 	// Setup animation
+	var then = 0;
 	var loopLength = 10;
 	function drawFrame(time) {
 		// Setup time delta
 		time *= 0.001;
+		var dt = time - then;
+		then = time;
 		var loopFraction = (time % loopLength)/parseFloat(loopLength);
+		
 		// Perform rendering
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		
-		planeStack = planeStack.filter(i_plane => i_plane.z_translation > 0);
-		while (n_planes > planeStack.length){
-			var newPlane = {
-				birthday: time,
-				azimuthal_angle: 180 * Math.random() - 90,
-				polar_angle: 180 * Math.random() - 90,
-				x_translation: 1000 * Math.random() - 500,
-				y_translation: 1000 * Math.random() - 500,
-				z_translation: 4000 * Math.random() + 1000
-				};
-			planeStack.push(newPlane);
-		}
+
 		for (var i_plane of planeStack) {
-			i_plane.z_translation -= 0.5*(time-i_plane.birthday);
+			// Move the plane closer
+			i_plane.z_translation -= speed*dt;
+			i_plane.z_translation = (2000+i_plane.z_translation) % 2000;
+			
 			drawPlane(
-				0, //50*(time-i_plane.birthday)-5*i_plane.y_translation,
+				0,//-0.5*(i_plane.z_translation - 1000),
 				i_plane.azimuthal_angle,
 				i_plane.polar_angle,
 				i_plane.x_translation,
@@ -254,14 +256,9 @@ function main() {
 				i_plane.z_translation
 				);
 		}
-		
-		//drawPlane(1000*(loopFraction-0.5), -25, 30, 300, -100, 700 - 500*loopFraction);
-		//drawPlane(1000*(loopFraction-0.5), 0, 0, 0, 0, 500 - 500*loopFraction);
 		requestAnimationFrame(drawFrame);
 	}
 	requestAnimationFrame(drawFrame);
-	//drawFrame(0);
-	//drawFrame(1);
 }
 
 

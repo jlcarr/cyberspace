@@ -16,6 +16,11 @@ At a high level the program essentially works like this:
 5. Draw the plane in 3D space
 6. Repleat steps 4&5 for as many planes as desired
 
+Planes are generated randomly, and their parameters are stored as JS objects so as to just perform simple parameter updates during the animation steps
+
+## Todo
+- Add Gaussian blur to create the bloom glow effect
+- Add UI controls to tweak the animation in browser (color, n planes, distance ranges, orthogonality)
 
 ## WebGL resources
 ### Complete Guides
