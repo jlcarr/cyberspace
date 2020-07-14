@@ -20,16 +20,27 @@ Planes are generated randomly, and their parameters are stored as JS objects so 
 
 ## Todo
 - Add Gaussian blur to create the bloom glow effect
-- Add UI controls to tweak the animation in browser (color, n planes, distance ranges, orthogonality)
+- Add distance fade-in effect
+- Add UI controls to tweak the animation in browser
+  - Color
+  - Number of planes
+  - Randomness ranges
+  - Orthogonality and other generation settings
+  - Ability to render other text
 
 ## WebGL resources
 ### Complete Guides
 https://webglfundamentals.org  
 http://learnwebgl.brown37.net  
 https://xem.github.io/articles/webgl-guide.html  
+### Reference Pages
+https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API  
+https://www.shaderific.com/glsl  
 ### Introductory Examples
 https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Basic_2D_animation_example  
 https://www.tutorialspoint.com/webgl/webgl_drawing_points.htm  
+### Specific Examples
+https://learnopengl.com/Advanced-Lighting/Bloom  
 ### Mathematics Resources
 https://en.wikipedia.org/wiki/Rotation_matrix  
 https://en.wikipedia.org/wiki/Spherical_coordinate_system  
