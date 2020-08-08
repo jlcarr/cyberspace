@@ -197,8 +197,8 @@ function main() {
 	gl.vertexAttribPointer(texcoordLocation, n_dim, gl.FLOAT, false, 0, 0);
 
 	// Tell WebGL how to convert from clip space to pixels
-	gl.canvas.width  = window.innerWidth;
-	gl.canvas.height = window.innerHeight;
+	//gl.canvas.width  = window.innerWidth;
+	//gl.canvas.height = window.innerHeight;
 	// set the resolution
 	gl.uniform3f(clipspace_scaleLocation, gl.canvas.width, gl.canvas.height, (gl.canvas.width+gl.canvas.height)/2);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
