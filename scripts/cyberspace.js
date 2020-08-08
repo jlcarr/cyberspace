@@ -144,7 +144,7 @@ function main() {
 	var texture = gl.createTexture();
 	
 	
-	// Create a buffer to put three 2d clip space points in
+	// Create a buffer to put the untransformed points in
 	var rectangleCoordinates = [
 		-image.width/2, -image.height/2,
 		image.width/2, -image.height/2,
@@ -156,7 +156,7 @@ function main() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rectangleCoordinates), gl.STATIC_DRAW);
 
-	// provide texture coordinates for the rectangle.
+	// Provide matching texture coordinates for the rectangle.
 	var textureCoordinates = [
 		0,  0,
 		1,  0,
@@ -196,9 +196,13 @@ function main() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
 	gl.vertexAttribPointer(texcoordLocation, n_dim, gl.FLOAT, false, 0, 0);
 
+	// Tell WebGL how to convert from clip space to pixels
+	gl.canvas.width  = window.innerWidth;
+	gl.canvas.height = window.innerHeight;
 	// set the resolution
 	gl.uniform3f(clipspace_scaleLocation, gl.canvas.width, gl.canvas.height, (gl.canvas.width+gl.canvas.height)/2);
-
+	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	
 	
 	// Draw function
 	function drawPlane(scroll_factor, azimuthal_angle, polar_angle, x_translation, y_translation, z_translation){
@@ -207,7 +211,7 @@ function main() {
 		gl.uniform1f(azimuthal_angleLocation, azimuthal_angle);
 		gl.uniform1f(polar_angleLocation, polar_angle);
 		gl.uniform3f(translationLocation, x_translation, y_translation, z_translation);
-
+		
 		// Draw the rectangle.
 		gl.drawArrays(gl.TRIANGLES, 0, 3*n_tris);
 	}
