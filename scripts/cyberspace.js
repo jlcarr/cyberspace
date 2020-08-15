@@ -1,4 +1,4 @@
-// A script for simulating particles with WebGL
+// A script for rendering cyberspace as code flying though 3D space with WebGL
 
 // Define globals
 let gl = null;

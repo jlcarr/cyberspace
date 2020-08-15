@@ -1,5 +1,7 @@
 # cyberspace
-A WebGL project to depict cyberspace as a rendering of source code on flying planes in 3D.
+A WebGL project to depict cyberspace as a rendering of source code on flying planes in 3D.  
+
+See the project in action [here](https://jcarr.ca/cyberspace).  
 
 ## Features
 - WebGL GPU accelerated rendering
